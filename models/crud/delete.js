@@ -11,9 +11,13 @@ module.exports = async (tableName = null, id = null) => {
   const params = {
     TableName: tableName,
     Key: key,
+    ReturnValues: 'ALL_OLD',
   };
 
   log.info('delete');
-  await documentClient.delete(params).promise();
-  return { msg: `Input with id: ${id} has successfully been deleted.` };
+  const data = await documentClient.delete(params).promise();
+  return {
+    msg: `Input with id: ${id} has successfully been deleted.`,
+    data,
+  };
 };
