@@ -20,7 +20,7 @@ function UpdateDataExpression(data) {
   return { UpdateExpression, ExpressionAttributeValues };
 }
 
-/** )
+/**
  * Update the input with the data
  *
  * @param {string} tableName

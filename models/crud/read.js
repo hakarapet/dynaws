@@ -1,5 +1,4 @@
 const AWS = require('aws-sdk');
-const _ = require('lodash');
 const log = require('./../../libs/logger');
 const { dbTables } = require('./../setup/init');
 const { setDbTableKeys } = require('./../../utils');
