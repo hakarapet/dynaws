@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+  dynaws:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NODE_ENV=development
+    environment:
+      - REGION=eu-west-1
+      - PORT=8001
+      - DYNAMO_ENDPOINT=http://dynamo
+      - DYNAMO_PORT=8000
+      - LOG_LEVEL=trace
+    ports:
+      - 80:8001
+    depends_on:
+      - local-dynamodb
+    links:
+      - local-dynamodb:dynamo
+    volumes:
+      - .:/home/node/app
+      - /home/node/app/node_modules
+
+  local-dynamodb:
+    image: deangiberson/aws-dynamodb-local
+    entrypoint: ["/usr/bin/java", "-Djava.library.path=.", "-jar", "DynamoDBLocal.jar", "-dbPath", "/var/dynamodb_local", "-sharedDb"]
+    ports:
+      - 81:8000
