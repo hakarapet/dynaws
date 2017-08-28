@@ -2,11 +2,15 @@ const log = require('./../libs/logger');
 const createInput = require('./../models/crud/create');
 const deleteInputById = require('./../models/crud/delete');
 const { getItemById, getListOfInputs } = require('./../models/crud/read');
+const _ = require('lodash');
+const { dbTables } = require('./../models/setup/init');
 
 async function createNewInput(tableName, inputData) {
-  log.info(`Creating new input. Table name: ${tableName}`);
-  const result = await createInput(tableName, inputData);
+  const table = _.find(dbTables, { name: tableName });
+  const hash = inputData[table.hash] || false;
 
+  log.info(`Creating new input. Table name: ${tableName}`);
+  const result = await createInput(tableName, inputData, hash);
   return result;
 }
 

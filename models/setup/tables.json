@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Planes",
+    "hash": "id",
+    "hashType": "string"
+  },
+  {
+    "name": "Airports", 
+    "hash": "code",
+    "hashType": "string"
+  }
+]
