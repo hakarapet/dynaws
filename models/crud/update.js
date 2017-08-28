@@ -6,6 +6,14 @@ const { setDbTableKeys } = require('./../../utils');
 
 const documentClient = new AWS.DynamoDB.DocumentClient();
 
+/**
+ * Creates additional expressions to use as in
+ * aws-sdk to update the specific attributes of
+ * table item.
+ *
+ * @param {object} data
+ * @returns {object}
+ */
 function UpdateDataExpression(data) {
   let UpdateExpression = 'set ';
   const ExpressionAttributeValues = {};

@@ -3,6 +3,11 @@ const Schema = require('./schema');
 const log = require('./../../libs/logger');
 const dbTables = require('./tables.json');
 
+/**
+ * Sets up the configurations
+ * for connecting to AWS db
+ *
+ */
 function updateAWSConfig() {
   log.info(`updateAWSConfig: REGION: ${process.env.REGION}`);
   const awsConfig = {
