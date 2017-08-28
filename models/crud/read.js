@@ -2,6 +2,7 @@ const AWS = require('aws-sdk');
 const _ = require('lodash');
 const log = require('./../../libs/logger');
 const { dbTables } = require('./../setup/init');
+const { setDbTableKeys } = require('./../../utils');
 
 const documentClient = new AWS.DynamoDB.DocumentClient();
 
@@ -13,9 +14,7 @@ const documentClient = new AWS.DynamoDB.DocumentClient();
  * @returns
  */
 async function getItemById(tableName = null, id = null) {
-  const key = {};
-  const searchTable = _.find(dbTables, { name: tableName });
-  key[searchTable.hash] = id;
+  const key = setDbTableKeys(tableName, id, dbTables);
 
   const params = {
     TableName: tableName,

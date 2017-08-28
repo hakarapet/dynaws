@@ -2,6 +2,7 @@ const AWS = require('aws-sdk');
 const _ = require('lodash');
 const log = require('./../../libs/logger');
 const { dbTables } = require('./../setup/init');
+const { setDbTableKeys } = require('./../../utils');
 
 const documentClient = new AWS.DynamoDB.DocumentClient();
 
@@ -28,9 +29,7 @@ function UpdateDataExpression(data) {
  * @returns {object}
  */
 async function updateItemById(tableName, id, data) {
-  const key = {};
-  const searchTable = _.find(dbTables, { name: tableName });
-  key[searchTable.hash] = id;
+  const key = setDbTableKeys(tableName, id, dbTables);
   const updateDataExp = new UpdateDataExpression(data);
 
   const params = {

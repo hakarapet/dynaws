@@ -1,7 +1,7 @@
 const express = require('express');
 const Controller = require('./../controllers/main');
 const log = require('../libs/logger');
-const { capitalizeFirstLetter } = require('./../utils/utils');
+const { capitalizeFirstLetter } = require('./../utils');
 
 const router = express.Router();
 
