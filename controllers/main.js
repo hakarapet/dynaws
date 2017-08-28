@@ -2,6 +2,7 @@ const log = require('./../libs/logger');
 const createInput = require('./../models/crud/create');
 const deleteInputById = require('./../models/crud/delete');
 const { getItemById, getListOfInputs } = require('./../models/crud/read');
+const { updateItemById } = require('./../models/crud/update');
 const _ = require('lodash');
 const { dbTables } = require('./../models/setup/init');
 
@@ -42,9 +43,17 @@ async function deleteInput(tableName = null, key = null) {
   return result;
 }
 
+async function updateInput(tableName = null, key = null, data = {}) {
+  log.info(`Updating input with id: ${key} on table: ${tableName}`);
+  const result = await updateItemById(tableName, key, data);
+
+  return result;
+}
+
 module.exports = {
   createNewInput,
   getInputById,
   getInputs,
   deleteInput,
+  updateInput,
 };

@@ -26,7 +26,6 @@ async function createDbTables() {
   const dynamoDb = new AWS.DynamoDB();
   try {
     await Promise.all(dbTables.map(async (tb) => {
-
       log.info(`Creating table: ${tb.name}`);
       const params = new Schema(tb.name, tb.hash, tb.hashType);
 

@@ -14,9 +14,7 @@ const documentClient = new AWS.DynamoDB.DocumentClient();
  */
 async function getItemById(tableName = null, id = null) {
   const key = {};
-
   const searchTable = _.find(dbTables, { name: tableName });
-
   key[searchTable.hash] = id;
 
   const params = {
@@ -24,7 +22,7 @@ async function getItemById(tableName = null, id = null) {
     Key: key,
   };
 
-  log.debug('getItemById', params);
+  log.info(`getItemById: ${params}`);
   return documentClient.get(params).promise();
 }
 /**

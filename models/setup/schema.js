@@ -4,6 +4,30 @@ const attributeTypes = {
   number: 'N',
   binary: 'B',
 };
+
+/**
+ * Adds keyschema for range in
+ * given schema. Returns new updated schema
+ *
+ * @param {string} range
+ * @param {string} rangeType
+ * @param {object} schema
+ * @returns {object}
+ */
+function addRange(range, rangeType, schema) {
+  const rangeKeySchema = {
+    AttributeName: range,
+    KeyType: 'RANGE',
+  };
+  const rangeAttributeDefinitions = {
+    AttributeName: range,
+    AttributeType: attributeTypes[rangeType],
+  };
+  schema.KeySchema.push(rangeKeySchema);
+  schema.KeySchema.push(rangeAttributeDefinitions);
+  return schema;
+}
+
 /**
  * Creates a schema for dynamodb using minimum tableName, hash and hashType.
  * All other attributes are optional.
@@ -19,7 +43,7 @@ const attributeTypes = {
  */
 function createSchema(tableName, hash, hashType, range, rangeType, read = 5, write = 2) {
   if (!(tableName && hash && hashType)) {
-    return new Error('Missing required parameters: tableName or hash');
+    return new Error('Missing required parameters: tableName, hash ot hashType');
   }
 
   /**
@@ -33,12 +57,14 @@ function createSchema(tableName, hash, hashType, range, rangeType, read = 5, wri
   schema = {
     TableName: tableName,
     KeySchema: [
-      { AttributeName: hash,
+      {
+        AttributeName: hash,
         KeyType: 'HASH',
       },
     ],
     AttributeDefinitions: [
-      { AttributeName: hash,
+      {
+        AttributeName: hash,
         AttributeType: attributeTypes[hashType],
       },
     ],
@@ -49,18 +75,7 @@ function createSchema(tableName, hash, hashType, range, rangeType, read = 5, wri
   };
 
   if (range && rangeType) {
-    schema.KeySchema.push(
-      {
-        AttributeName: range,
-        KeyType: 'RANGE',
-      },
-    );
-    schema.AttributeDefinitions.push(
-      {
-        AttributeName: range,
-        AttributeType: attributeTypes[rangeType],
-      },
-    );
+    schema = addRange(range, rangeType, schema);
   }
 
   return schema;

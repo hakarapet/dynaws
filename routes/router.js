@@ -62,6 +62,22 @@ router
       log.error(err);
       return next(err);
     }
+  })
+  .patch('/:tableName/:key', async (req, res, next) => {
+    try {
+      const reqParams = req.params;
+      const tableName = capitalizeFirstLetter(reqParams.tableName);
+      const inputKey = reqParams.key || '';
+      const updateData = req.body;
+
+      log.info(`updateInputById: Update data for key: ${inputKey} from table:${tableName}`);
+      const result = await Controller.updateInput(tableName, inputKey, updateData);
+
+      return res.status(200).json(result);
+    } catch (err) {
+      log.error(err);
+      return next(err);
+    }
   });
 
 module.exports = router;
