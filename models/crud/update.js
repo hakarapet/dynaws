@@ -3,6 +3,7 @@ const _ = require('lodash');
 const log = require('./../../libs/logger');
 const { dbTables } = require('./../setup/init');
 const { setDbTableKeys } = require('./../../utils');
+const flatten = require('flat');
 
 const documentClient = new AWS.DynamoDB.DocumentClient();
 
@@ -18,10 +19,14 @@ function UpdateDataExpression(data) {
   let UpdateExpression = 'set ';
   const updateExpressionArr = [];
   const ExpressionAttributeValues = {};
+  // const ExpressionAttributeNames = {};
 
-  _.forEach(data, (attrValue, attrKey) => {
-    updateExpressionArr.push(`${attrKey} = :${attrKey}`);
-    ExpressionAttributeValues[`:${attrKey}`] = attrValue;
+  const flatData = flatten(data);
+
+  _.forEach(flatData, (attrValue, attrKey) => {
+    const validAttrKey = attrKey.replace('.', '');
+    updateExpressionArr.push(`${attrKey} = :${validAttrKey}`);
+    ExpressionAttributeValues[`:${validAttrKey}`] = attrValue;
   });
 
   UpdateExpression += updateExpressionArr.join(', ');
@@ -43,7 +48,7 @@ async function updateItemById(tableName, id, data) {
   const params = {
     TableName: tableName,
     Key: key,
-    ReturnValues: 'UPDATED_NEW',
+    ReturnValues: 'ALL_NEW',
   };
 
   Object.assign(params, updateDataExp);
