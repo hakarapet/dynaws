@@ -49,9 +49,8 @@ async function updateItemById(tableName, id, data) {
     TableName: tableName,
     Key: key,
     ReturnValues: 'ALL_NEW',
+    ...updateDataExp,
   };
-
-  Object.assign(params, updateDataExp);
 
   log.info(`updateItemById: ${params}`);
   return documentClient.update(params).promise();
