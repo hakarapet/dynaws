@@ -16,15 +16,15 @@ const documentClient = new AWS.DynamoDB.DocumentClient();
  */
 function UpdateDataExpression(data) {
   let UpdateExpression = 'set ';
+  const updateExpressionArr = [];
   const ExpressionAttributeValues = {};
 
   _.forEach(data, (attrValue, attrKey) => {
-    UpdateExpression += `${attrKey} = :${attrKey}, `;
+    updateExpressionArr.push(`${attrKey} = :${attrKey}`);
     ExpressionAttributeValues[`:${attrKey}`] = attrValue;
   });
 
-  /* Remove the last `, ` from the string as it causes error */
-  UpdateExpression = UpdateExpression.substring(0, UpdateExpression.length - 2);
+  UpdateExpression += updateExpressionArr.join(', ');
   return { UpdateExpression, ExpressionAttributeValues };
 }
 
