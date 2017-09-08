@@ -1,5 +1,4 @@
 const AWS = require('aws-sdk');
-const _ = require('lodash');
 const log = require('./../../libs/logger');
 const { dbTables } = require('./../setup/init');
 const { setDbTableKeys } = require('./../../utils');
@@ -16,21 +15,34 @@ const documentClient = new AWS.DynamoDB.DocumentClient();
  * @returns {object}
  */
 function UpdateDataExpression(data) {
-  let UpdateExpression = 'set ';
-  const updateExpressionArr = [];
+  const flattenData = flatten(data, { safe: true });
   const ExpressionAttributeValues = {};
-  // const ExpressionAttributeNames = {};
+  const ExpressionAttributeNames = {};
 
-  const flatData = flatten(data);
+  const updateExpressionArr = Object.keys(flattenData).map((flatKey, index) => {
+    const flatVal = flattenData[flatKey];
+    let flatValueIndex = `:v_${index}`;
+    const keyArray = flatKey.split('.');
 
-  _.forEach(flatData, (attrValue, attrKey) => {
-    const validAttrKey = attrKey.replace('.', '');
-    updateExpressionArr.push(`${attrKey} = :${validAttrKey}`);
-    ExpressionAttributeValues[`:${validAttrKey}`] = attrValue;
+    ExpressionAttributeValues[flatValueIndex] = flatVal;
+
+    let updateExpressionBlock = keyArray.map((keyArrVal, keyArrIdx) => {
+      const key = `#k_${index}_${keyArrIdx}`;
+      ExpressionAttributeNames[key] = keyArrVal;
+      return key;
+    });
+    updateExpressionBlock = updateExpressionBlock.join('.');
+
+    if (Array.isArray(flatVal)) {
+      flatValueIndex = `list_append(${updateExpressionBlock}, :v_${index})`;
+    }
+
+    return `${updateExpressionBlock} = ${flatValueIndex}`;
   });
 
-  UpdateExpression += updateExpressionArr.join(', ');
-  return { UpdateExpression, ExpressionAttributeValues };
+  const UpdateExpression = `set ${updateExpressionArr.join(', ')}`;
+
+  return { UpdateExpression, ExpressionAttributeValues, ExpressionAttributeNames };
 }
 
 /**
@@ -48,7 +60,7 @@ async function updateItemById(tableName, id, data) {
   const params = {
     TableName: tableName,
     Key: key,
-    ReturnValues: 'ALL_NEW',
+    ReturnValues: 'UPDATED_NEW',
     ...updateDataExp,
   };
 
